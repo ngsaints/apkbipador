@@ -22,7 +22,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22' # Atualizando para o Node 22 que o seu projeto recomendou
+
+      - name: Remove Windows-only dependencies for APK build
+        run: |
+          npm uninstall electron @thesusheer/electron-printer --no-save
 
       - name: Install Project Dependencies
         run: npm install
