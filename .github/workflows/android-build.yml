@@ -26,7 +26,7 @@ jobs:
 
       - name: Remove Windows-only dependencies for APK build
         run: |
-          npm uninstall electron @thesusheer/electron-printer --no-save
+          node -e "let p=require('./package.json'); delete p.dependencies['@thesusheer/electron-printer']; delete p.devDependencies['electron']; delete p.devDependencies['electron-builder']; require('fs').writeFileSync('./package.json', JSON.stringify(p, null, 2))"
 
       - name: Install Project Dependencies
         run: npm install
