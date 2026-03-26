@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WMS Rocket - Bipador Q900</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Notificações de Status -->
+        <div id="status-indicator" class="status-ready">
+            <span id="status-text">PRONTO PARA BIPAR</span>
+        </div>
+
+        <main class="scanner-container">
+            <header>
+                <img src="../icon.png" alt="WMS Rocket Logo" class="logo">
+                <h1>Painel de Bipagem</h1>
+                <p>Netum Q900 Active</p>
+            </header>
+
+            <div class="input-focus-area">
+                <!-- O segredo do bipador rápido: Um input escondido ou estilizado que sempre está em foco -->
+                <input type="text" id="barcode-input" placeholder="Aguardando scanner..." autocomplete="off">
+                <div class="visual-feedback">
+                    <span class="icon-scan">🔍</span>
+                    <p>Posicione o feixe no código de barras</p>
+                </div>
+            </div>
+
+            <section class="stats-panel">
+                <div class="stat-card">
+                    <label>Pedidos Bipados</label>
+                    <span id="counter">0</span>
+                </div>
+                <div class="stat-card">
+                    <label>Último Item</label>
+                    <span id="last-item">Nenhum</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Fallback: Câmera (Oculto por padrão, ativado se o usuário preferir) -->
+        <button id="toggle-camera" class="btn-secondary">Usar Câmera</button>
+        <div id="camera-preview" class="hidden"></div>
+    </div>
+
+    <script type="module" src="wms-api/bipador-controller.js"></script>
+</body>
+</html>

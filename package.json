@@ -1,0 +1,32 @@
+{
+  "name": "wms-rocket-agent",
+  "version": "1.0.0",
+  "description": "Electron WebView and Local Agent for WMS Rocket",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@thesusheer/electron-printer": "latest",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "ws": "^8.14.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "app.base44.wmsrocket",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png"
+    }
+  }
+}

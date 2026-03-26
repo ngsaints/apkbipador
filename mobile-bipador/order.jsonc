@@ -1,0 +1,15 @@
+/**
+ * Modelo de dados para a bipagem de pedidos no Netum Q900
+ * Este arquivo define o formato que o scanner deve preencher e enviar para a API.
+ */
+{
+  "orderId": "",         // ID do pedido que está sendo bipado
+  "barcode": "",         // O código de barras capturado pelo scanner físico ou câmera
+  "timestamp": "",       // Data/Hora da captura (ISO)
+  "userId": "",          // ID do operador logado no bipador
+  "status": "bipado",    // Status para controle de fluxo: 'pendente', 'bipado', 'erro'
+  "metadata": {          // Informações extras do dispositivo
+    "device": "Q900",
+    "batteryLevel": 100
+  }
+}
