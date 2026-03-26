@@ -20,7 +20,9 @@
     "@capacitor/cli": "^8.3.0",
     "@capacitor/core": "^8.3.0",
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.2"
   },
   "build": {
     "appId": "app.base44.wmsrocket",
