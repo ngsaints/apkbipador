@@ -12,7 +12,7 @@ const lastItemEl = document.getElementById('last-item');
 const visualFeedback = document.querySelector('.visual-feedback');
 
 let scanCount = 0;
-let currentOrderId = null; 
+let currentOrderId = null;
 let isWaitingForTracking = false; // Estado para quando termina os itens e aguarda o selo
 let countdownTimer = null;
 const DEVICE_ID = 'Q900-Agent';
@@ -29,13 +29,13 @@ window.addEventListener('load', () => {
     keepFocus();
     checkUrlParams(); // Verifica se o pedido veio via URL ao abrir
 });
-input.addEventListener('blur', () => setTimeout(keepFocus, 50)); 
+input.addEventListener('blur', () => setTimeout(keepFocus, 50));
 
 // 2. Capturar ID do pedido via URL (Se disparado pela interface Web da Base44)
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get('orderId') || params.get('pedido');
-    
+
     if (orderId) {
         console.log('Pedido recebido via URL:', orderId);
         loadOrder(orderId);
@@ -57,9 +57,9 @@ input.addEventListener('keydown', async (event) => {
 function parseBarcode(raw) {
     try {
         const obj = JSON.parse(raw);
-        return obj.id || raw; 
+        return obj.id || raw;
     } catch (e) {
-        return raw; 
+        return raw;
     }
 }
 
@@ -91,7 +91,7 @@ async function loadOrder(orderQuery) {
 
         if (response.ok && data.id) {
             currentOrderId = data.id; // Agora temos o ID real do banco
-            scanCount = 0; 
+            scanCount = 0;
             counterEl.innerText = '0';
             lastItemEl.innerText = 'Pedido Ativo: ' + (data.order_number || orderQuery);
             showStatus('PRONTO PARA BIPAR SKUs', 'success');
@@ -123,7 +123,7 @@ async function biparItem(sku) {
 
         if (response.ok) {
             handleSuccess(sku);
-            
+
             // Se a API retornar que o pedido já pode imprimir/embalar
             if (result.prontoParaEmbalar || result.finalizado) {
                 isWaitingForTracking = true;
@@ -168,11 +168,11 @@ async function confirmFinalization(trackingCode) {
 function startTransitionCountdown() {
     let seconds = TRANSITION_DELAY / 1000;
     isWaitingForTracking = false;
-    
+
     const interval = setInterval(() => {
         showStatus(`CONCLUÍDO! PRÓXIMO EM ${seconds}s...`, 'success');
         seconds--;
-        
+
         if (seconds < 0) {
             clearInterval(interval);
             resetBipador();
@@ -199,7 +199,7 @@ function handleSuccess(barcode) {
 function handleError(msg, technicalError = null) {
     showStatus(msg, 'error');
     console.error('Bipador Error:', msg, technicalError);
-    
+
     // Alerta remoto para o desenvolvedor ver na Base44
     sendRemoteLog(msg, technicalError);
 
@@ -212,7 +212,7 @@ function handleError(msg, technicalError = null) {
 // 5. Sistema de Logging Remoto (Para Debug de campo)
 async function sendRemoteLog(message, error) {
     const LOG_ENDPOINT = 'https://wmsrocket.base44.app/api/wms-api/logs';
-    
+
     try {
         await fetch(LOG_ENDPOINT, {
             method: 'POST',
@@ -236,7 +236,7 @@ function showStatus(text, type) {
     statusText.innerText = text;
     statusIndicator.className = ''; // Limpa classes
     statusIndicator.classList.add(`status-${type}`);
-    
+
     // Volta para o estado inicial após 3 segundos
     if (type !== 'ready') {
         setTimeout(() => {
@@ -249,3 +249,52 @@ function applyFlashEffect() {
     visualFeedback.classList.add('anim-flash');
     setTimeout(() => visualFeedback.classList.remove('anim-flash'), 300);
 }
+
+// 7. Lógica da Câmera (Para celulares normais sem laser)
+let html5QrScanner = null;
+
+document.getElementById('toggle-camera').addEventListener('click', () => {
+    const previewEl = document.getElementById('camera-preview');
+    const isHidden = previewEl.classList.contains('hidden');
+
+    if (isHidden) {
+        previewEl.classList.remove('hidden');
+        document.getElementById('toggle-camera').innerText = 'Fechar Câmera';
+        startCamera();
+    } else {
+        stopCamera();
+        previewEl.classList.add('hidden');
+        document.getElementById('toggle-camera').innerText = 'Usar Câmera';
+    }
+});
+
+function startCamera() {
+    html5QrScanner = new Html5Qrcode("camera-preview");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    html5QrScanner.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+            // Sucesso na leitura
+            console.log("Câmera leu:", decodedText);
+            processScan(decodedText);
+            // Opcional: vibrar ou som de bip
+            if (navigator.vibrate) navigator.vibrate(50);
+        },
+        (errorMessage) => {
+            // Apenas ignore erros de escaneamento contínuo
+        }
+    ).catch((err) => {
+        handleError("Erro ao acessar câmera: " + err);
+    });
+}
+
+function stopCamera() {
+    if (html5QrScanner) {
+        html5QrScanner.stop().then(() => {
+            console.log("Câmera encerrada.");
+        }).catch((err) => console.warn("Erro ao parar câmera:", err));
+    }
+}
+
